@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f9e107a1b37e7084e8e944cc0ec795e9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243679
+  packageName: Draw Line Paint with Raycast and Objects
+  packageVersion: 1.0
+  assetPath: Assets/[Force]Draw/LineSettings/ThinLine3D.asset
+  uploadId: 565067

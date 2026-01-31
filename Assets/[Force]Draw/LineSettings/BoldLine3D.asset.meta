@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b61341f5932d5e74a888f6276b1b7eed
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243679
+  packageName: Draw Line Paint with Raycast and Objects
+  packageVersion: 1.0
+  assetPath: Assets/[Force]Draw/LineSettings/BoldLine3D.asset
+  uploadId: 565067
