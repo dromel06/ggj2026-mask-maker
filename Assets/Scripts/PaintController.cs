@@ -81,6 +81,14 @@ public class PaintController : MonoBehaviour
             if (drawLineController != null) drawLineController.FlushLines();
         }
 
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            if (drawLineController != null)
+            {
+                drawLineController.ToggleDrawMode();
+            }
+        }
+
         // Acumular cambios de rotación desde distintas fuentes: ratón derecho, toque, WASD/teclas (Horizontal/Vertical)
         float deltaRelY = 0f;
         float deltaRelX = 0f;
@@ -146,6 +154,7 @@ public class PaintController : MonoBehaviour
                 if (drawLineController != null) drawLineController.SetIsAvailableTrue();
             }
         }
+
 
         switch (Input.inputString)
         {

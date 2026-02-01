@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.19290671, g: 0.50536764, b: 0.8018868, a: 1}
   m_FogMode: 1
   m_FogDensity: 0
@@ -25,7 +25,7 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.16403547, g: 0.37036583, b: 0.5441177, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SubtractiveShadowColor: {r: 0.18845676, g: 0.34070897, b: 0.7264151, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 73324b55f67f54c7bbf43204788b8bbe, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &4
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -92,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000001, guid: 38b6b4289210e3546924419738a007ba, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 13c07b4f410a153439fe18418d37797c, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 9163188be3bb9490e87152da256a628e, type: 2}
 --- !u!196 &5
 NavMeshSettings:
@@ -174,6 +175,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_HDR
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_ClearFlags
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0.9212723
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0.5330188
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029746, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_AllowDynamicResolution
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 22418418, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 99.400024
@@ -198,6 +223,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -17.300049
       objectReference: {fileID: 0}
+    - target: {fileID: 4153096646602630562, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_RendererIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153096646602630562, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_AllowHDROutput
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153096646602630562, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153096646602630562, guid: e2402d4ef4fe747ae9ad59bdccad4556, type: 3}
+      propertyPath: m_VolumeFrameworkUpdateModeOption
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -213,6 +254,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1192864541}
   - component: {fileID: 1192864540}
+  - component: {fileID: 1192864542}
   m_Layer: 0
   m_Name: Directional light
   m_TagString: Untagged
@@ -228,14 +270,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1192864539}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 0.6
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.802082
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 1
     m_Resolution: -1
@@ -300,6 +342,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1192864542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192864539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
