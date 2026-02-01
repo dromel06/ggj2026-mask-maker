@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "ggj2026-mask-maker.slnx"
+    "dotnet.defaultSolution": "gg.slnx"
 }

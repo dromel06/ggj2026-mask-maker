@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Data1
   m_EditorClassIdentifier: ForceDraw.dll::ForceDraw.DrawData
   LinePrefab: {fileID: 2853156510983525571, guid: d563fef4fac76834aac3bb12a5fb7f79, type: 3}
-  LineColor: {r: 0.08235291, g: 0.93333334, b: 0.09202668, a: 1}
-  LineSize: 0.388
+  LineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  LineSize: 0.8
   MaxLineAmount: -1
   ClearLinesIfAmountPassesMaxLine: 0
   DrawOffset: 0.109

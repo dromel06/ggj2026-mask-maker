@@ -1,13 +1,14 @@
 using UnityEngine;
 using ForceDraw;
 
-
 public class PaintController : MonoBehaviour
 {
 
     [Header("Draw Controller")]
     public GameObject drawControllerObject;
     public GameObject maskObject;
+    public DrawData drawData;
+    public GameObject[] BrushesButtons;
 
     private DrawLineController drawLineController;
 
@@ -34,6 +35,9 @@ public class PaintController : MonoBehaviour
     [Tooltip("Bloquea la rotación cuando es true.")]
     public bool rotationLocked = false;
 
+    [Tooltip("Permite/deshabilita la rotación (WASD/tacto/ratón).")]
+    public bool canRotate = true;
+
     float initialY;
     float currentRelAngleY;
 
@@ -42,6 +46,8 @@ public class PaintController : MonoBehaviour
 
     GameObject[] lastDrawnObjects;
 
+    // Estado local para gestionar disponibilidad del dibujo mientras se rota
+    bool isRotating = false;
 
     void Start()
     {
@@ -59,41 +65,110 @@ public class PaintController : MonoBehaviour
 
     void Update()
     {
-        // No permitir rotación si no estamos en modo edición o si está bloqueada
-        if (!editMode || rotationLocked) return;
-
-        if (Input.GetMouseButtonUp(0)) // botón izquierdo soltado // cambiar los 
+        // No permitir rotación si no estamos en modo edición, está bloqueada o deshabilitada
+        if (!editMode || rotationLocked || !canRotate)
         {
-            drawLineController.FlushLines();
-            // if (drawControllerObject != null)
-            // {
-            //     foreach (Transform child in drawControllerObject.transform)
-            //     {
-            //         child.transform.parent = maskObject.transform;
-            //     }
-            // }
+            if (isRotating)
+            {
+                isRotating = false;
+                if (drawLineController != null) drawLineController.SetIsAvailableTrue();
+            }
+            return;
         }
 
-        if (Input.GetMouseButton(1)) // botón derecho mantenido
+        if (Input.GetMouseButtonUp(0)) // botón izquierdo soltado
         {
-            float deltaY = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-            currentRelAngleY = Mathf.Clamp(currentRelAngleY + deltaY, minAngle, maxAngle);
+            if (drawLineController != null) drawLineController.FlushLines();
+        }
 
+        // Acumular cambios de rotación desde distintas fuentes: ratón derecho, toque, WASD/teclas (Horizontal/Vertical)
+        float deltaRelY = 0f;
+        float deltaRelX = 0f;
+
+        // Mouse right button drag
+        if (Input.GetMouseButton(1))
+        {
+            deltaRelY += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y");
             if (invertY) mouseY = -mouseY;
-            float deltaX = -mouseY * rotationSpeed * Time.deltaTime; // negativo para comportamiento más natural al arrastrar
-            currentRelAngleX = Mathf.Clamp(currentRelAngleX + deltaX, minVerticalAngle, maxVerticalAngle);
+            deltaRelX += -mouseY * rotationSpeed * Time.deltaTime;
+        }
+
+        // Touch (iOS/Android) - usar el deltaPosition del primer dedo
+        if (Input.touchCount == 2)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Moved)
+            {
+                // Ajuste de sensibilidad para deltaPosition en píxeles
+                float touchMultiplier = 0.1f;
+                deltaRelY += t.deltaPosition.x * touchMultiplier * rotationSpeed * Time.deltaTime;
+                float touchY = t.deltaPosition.y * touchMultiplier;
+                if (invertY) touchY = -touchY;
+                deltaRelX += -touchY * rotationSpeed * Time.deltaTime;
+            }
+        }
+
+        // WASD / flechas (ejes Horizontal/Vertical)
+        float axisH = Input.GetAxis("Horizontal");
+        float axisV = Input.GetAxis("Vertical");
+        if (Mathf.Abs(axisH) > 0.0001f || Mathf.Abs(axisV) > 0.0001f)
+        {
+            deltaRelY += axisH * rotationSpeed * Time.deltaTime;
+            float keyY = axisV;
+            if (invertY) keyY = -keyY;
+            deltaRelX += -keyY * rotationSpeed * Time.deltaTime;
+        }
+
+        bool haveRotationInput = Mathf.Abs(deltaRelY) > 0.0001f || Mathf.Abs(deltaRelX) > 0.0001f;
+
+        if (haveRotationInput)
+        {
+            currentRelAngleY = Mathf.Clamp(currentRelAngleY + deltaRelY, minAngle, maxAngle);
+            currentRelAngleX = Mathf.Clamp(currentRelAngleX + deltaRelX, minVerticalAngle, maxVerticalAngle);
 
             Vector3 e = transform.localEulerAngles;
             e.y = initialY + currentRelAngleY;
             e.x = initialX + currentRelAngleX;
             transform.localEulerAngles = e;
-            drawLineController.SetIsAvailableFalse();
+
+            if (!isRotating)
+            {
+                isRotating = true;
+                if (drawLineController != null) drawLineController.SetIsAvailableFalse();
+            }
+        }
+        else
+        {
+            if (isRotating)
+            {
+                isRotating = false;
+                if (drawLineController != null) drawLineController.SetIsAvailableTrue();
+            }
         }
 
-        if (Input.GetMouseButtonUp(1))
+        switch (Input.inputString)
         {
-            drawLineController.SetIsAvailableTrue();
+            case "1":
+                BrushesButtons[0].GetComponent<BrushesButton>().OnClick();
+                break;
+            case "2":
+                BrushesButtons[1].GetComponent<BrushesButton>().OnClick();
+                break;
+            case "3":
+                BrushesButtons[2].GetComponent<BrushesButton>().OnClick();
+                break;
+            case "4":
+                BrushesButtons[3].GetComponent<BrushesButton>().OnClick();
+                break;
+        }
+    }
+
+    public void changeDrawSize(float newSize)
+    {
+        if (drawData != null)
+        {
+            drawData.LineSize = newSize;
         }
     }
 }
