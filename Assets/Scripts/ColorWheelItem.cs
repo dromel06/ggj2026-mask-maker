@@ -6,6 +6,7 @@ public class ColorWheelItem : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     public Button button;
     public Image image;
+    public Image backgroundImageItem; // Imagen de fondo para decoración
     public int index;
     public ColorWheelController controller;
     
@@ -21,13 +22,27 @@ public class ColorWheelItem : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
     }
 
-    public void Setup(int idx, Color color, ColorWheelController ctrl)
+    public void Setup(int idx, Color color, ColorWheelController ctrl, Sprite bgSprite)
     {
         index = idx;
         controller = ctrl;
+        
+        // Configurar color principal
         if (image != null)
         {
             image.color = color;
+        }
+
+        // Configurar fondo si existe
+        if (backgroundImageItem != null && bgSprite != null)
+        {
+            backgroundImageItem.sprite = bgSprite;
+            backgroundImageItem.gameObject.SetActive(true);
+        }
+        else if (backgroundImageItem != null)
+        {
+            // Ocultar si no hay sprite asignado
+            backgroundImageItem.gameObject.SetActive(false); 
         }
     }
 

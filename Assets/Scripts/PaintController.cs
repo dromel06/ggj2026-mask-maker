@@ -37,6 +37,9 @@ public class PaintController : MonoBehaviour
 
     [Tooltip("Permite/deshabilita la rotación (WASD/tacto/ratón).")]
     public bool canRotate = true;
+    
+    [Tooltip("Control maestro para habilitar/deshabilitar toda la interacción (usado por el menú).")]
+    public bool canPaint = true;
 
     [Header("Zoom")]
     public float mouseZoomSpeed = 100f; // Higher for scroll
@@ -89,6 +92,12 @@ public class PaintController : MonoBehaviour
 
     void Update()
     {
+        // Si no se permite pintar (ej. estamos en el menú), salimos inmediatamente
+        if (!canPaint) {
+            if (drawLineController != null) drawLineController.SetIsAvailableTrue();
+            return;
+        };
+
         // No permitir rotación si no estamos en modo edición, está bloqueada o deshabilitada
         if (!editMode || rotationLocked || !canRotate)
         {
@@ -103,6 +112,7 @@ public class PaintController : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) // botón izquierdo soltado
         {
             if (drawLineController != null) drawLineController.FlushLines();
+
         }
 
         // Acumular cambios de rotación desde distintas fuentes: ratón derecho, toque, WASD/teclas (Horizontal/Vertical)
@@ -254,5 +264,16 @@ public class PaintController : MonoBehaviour
         {
             drawData.LineSize = newSize;
         }
+    }
+
+    public void DeleteLines()
+    {
+        if (drawLineController != null) {
+            foreach (Transform child in drawLineController.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        
     }
 }
