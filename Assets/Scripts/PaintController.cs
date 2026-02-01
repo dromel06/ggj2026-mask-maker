@@ -38,11 +38,28 @@ public class PaintController : MonoBehaviour
     [Tooltip("Permite/deshabilita la rotación (WASD/tacto/ratón).")]
     public bool canRotate = true;
 
+    [Header("Zoom")]
+    public float mouseZoomSpeed = 100f; // Higher for scroll
+    public float keyZoomSpeed = 20f;
+    public float minZoom = 20f;
+    public float maxZoom = 60f;
+
+    [Header("Camera Rotation")]
+    public float cameraRotationSpeed = 100f;
+    public Vector2 cameraLimitX = new Vector2(-15, 15); // Pitch
+    public Vector2 cameraLimitY = new Vector2(-15, 15); // Yaw
+    
+    float initialCameraPitch;
+    float initialCameraYaw;
+    float currentCameraPitch = 0;
+    float currentCameraYaw = 0;
+
     float initialY;
     float currentRelAngleY;
 
     float initialX;
     float currentRelAngleX;
+
 
     GameObject[] lastDrawnObjects;
 
@@ -60,6 +77,13 @@ public class PaintController : MonoBehaviour
         if (drawControllerObject != null)
         {
             drawLineController = drawControllerObject.GetComponent<DrawLineController>();
+        }
+
+        if (Camera.main != null)
+        {
+            Vector3 camAngles = Camera.main.transform.localEulerAngles;
+            initialCameraPitch = camAngles.x;
+            initialCameraYaw = camAngles.y;
         }
     }
 
@@ -81,50 +105,79 @@ public class PaintController : MonoBehaviour
             if (drawLineController != null) drawLineController.FlushLines();
         }
 
-        if (Input.GetKeyUp(KeyCode.Tab))
-        {
-            if (drawLineController != null)
-            {
-                drawLineController.ToggleDrawMode();
-            }
-        }
-
         // Acumular cambios de rotación desde distintas fuentes: ratón derecho, toque, WASD/teclas (Horizontal/Vertical)
         float deltaRelY = 0f;
         float deltaRelX = 0f;
 
-        // Mouse right button drag
+        // Mouse right button drag -> Camera Rotation (Look)
+        bool isCameraRotating = false;
         if (Input.GetMouseButton(1))
         {
-            deltaRelY += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-            float mouseY = Input.GetAxis("Mouse Y");
-            if (invertY) mouseY = -mouseY;
-            deltaRelX += -mouseY * rotationSpeed * Time.deltaTime;
-        }
+            isCameraRotating = true;
+            // Camera Rotation Logic
+            float mouseX = Input.GetAxis("Mouse X") * cameraRotationSpeed * Time.deltaTime;
+            float mouseY = Input.GetAxis("Mouse Y") * cameraRotationSpeed * Time.deltaTime;
+            if (invertY) mouseY = -mouseY; // Reuse invertY preference? Or separate? Assuming reuse.
 
-        // Touch (iOS/Android) - usar el deltaPosition del primer dedo
-        if (Input.touchCount == 2)
-        {
-            Touch t = Input.GetTouch(0);
-            if (t.phase == TouchPhase.Moved)
+            currentCameraYaw += mouseX;
+            currentCameraPitch -= mouseY; // Pitch up/down
+
+            currentCameraYaw = Mathf.Clamp(currentCameraYaw, cameraLimitY.x, cameraLimitY.y);
+            currentCameraPitch = Mathf.Clamp(currentCameraPitch, cameraLimitX.x, cameraLimitX.y);
+
+            Camera cam = Camera.main;
+            if (cam != null)
             {
-                // Ajuste de sensibilidad para deltaPosition en píxeles
-                float touchMultiplier = 0.1f;
-                deltaRelY += t.deltaPosition.x * touchMultiplier * rotationSpeed * Time.deltaTime;
-                float touchY = t.deltaPosition.y * touchMultiplier;
-                if (invertY) touchY = -touchY;
-                deltaRelX += -touchY * rotationSpeed * Time.deltaTime;
+                cam.transform.localEulerAngles = new Vector3(
+                    initialCameraPitch + currentCameraPitch,
+                    initialCameraYaw + currentCameraYaw,
+                    0f
+                );
             }
         }
+        
+        // Touch (iOS/Android) for Camera Rotation ?? (User said "second click or similar in ios") -> 2 fingers
+        // Preserving 2-finger logic for now mapped to Camera Rotation instead of object rotation if desired, 
+        // OR user might want 2-finger simply to be "Right Click" equivalent.
+        if (Input.touchCount == 2)
+        {
+             Touch t = Input.GetTouch(0);
+             if (t.phase == TouchPhase.Moved)
+             {
+                isCameraRotating = true;
+                float touchMultiplier = 0.1f;
+                float tX = t.deltaPosition.x * touchMultiplier * cameraRotationSpeed * Time.deltaTime;
+                float tY = t.deltaPosition.y * touchMultiplier * cameraRotationSpeed * Time.deltaTime;
+                if (invertY) tY = -tY;
 
-        // WASD / flechas (ejes Horizontal/Vertical)
-        float axisH = Input.GetAxis("Horizontal");
-        float axisV = Input.GetAxis("Vertical");
-        if (Mathf.Abs(axisH) > 0.0001f || Mathf.Abs(axisV) > 0.0001f)
+                currentCameraYaw += tX;
+                currentCameraPitch -= tY;
+
+                currentCameraYaw = Mathf.Clamp(currentCameraYaw, cameraLimitY.x, cameraLimitY.y);
+                currentCameraPitch = Mathf.Clamp(currentCameraPitch, cameraLimitX.x, cameraLimitX.y);
+
+                Camera cam = Camera.main;
+                if (cam != null)
+                {
+                    cam.transform.localEulerAngles = new Vector3(
+                        initialCameraPitch + currentCameraPitch,
+                        initialCameraYaw + currentCameraYaw,
+                        0f
+                    );
+                }
+             }
+        }
+
+
+        // WASD / Keys -> Object Rotation (Horizontal/Vertical)
+        float axisH = Input.GetAxis("Horizontal"); // A/D or Left/Right
+        float axisV = Input.GetAxis("Vertical");   // W/S or Up/Down
+        if (Mathf.Abs(axisH) > 0.001f || Mathf.Abs(axisV) > 0.001f)
         {
             deltaRelY += axisH * rotationSpeed * Time.deltaTime;
             float keyY = axisV;
-            if (invertY) keyY = -keyY;
+            if (invertY) keyY = -keyY; 
+            // Usually W/S rotates around X axis (Pitch), A/D around Y axis (Yaw) for object
             deltaRelX += -keyY * rotationSpeed * Time.deltaTime;
         }
 
@@ -152,6 +205,28 @@ public class PaintController : MonoBehaviour
             {
                 isRotating = false;
                 if (drawLineController != null) drawLineController.SetIsAvailableTrue();
+            }
+        }
+
+        // --- Zoom Logic ---
+        float zoomDelta = -Input.mouseScrollDelta.y * mouseZoomSpeed * Time.deltaTime; // Mouse Wheel
+
+        if (Input.GetKey(KeyCode.R)) // Zoom In
+        {
+            zoomDelta -= keyZoomSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.F)) // Zoom Out
+        {
+            zoomDelta += keyZoomSpeed * Time.deltaTime;
+        }
+
+        if (Mathf.Abs(zoomDelta) > 0.001f)
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                float newFOV = cam.fieldOfView + zoomDelta;
+                cam.fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
             }
         }
 
