@@ -19,6 +19,14 @@ public class GameController : MonoBehaviour
     [Tooltip("El panel del HUD del juego (se ocultará al mostrar el menú).")]
     public GameObject gameHUDPanel;
 
+    [Header("Sub-Panels")]
+    [Tooltip("Panel de Créditos.")]
+    public GameObject creditsPanel;
+
+    [Tooltip("Panel de Tutorial.")]
+    public GameObject tutorialPanel;
+
+    [Header("References")]
     [Tooltip("Referencia al PaintController para deshabilitarlo cuando el menú está activo.")]
     public PaintController paintController;
 
@@ -60,6 +68,10 @@ public class GameController : MonoBehaviour
         UpdateMusicState();
         UpdatePaintState();
         CaptureOriginalPaintTransform();
+
+        // Asegurar que los paneles secundarios estén cerrados al inicio
+        if (creditsPanel != null) creditsPanel.SetActive(false);
+        if (tutorialPanel != null) tutorialPanel.SetActive(false);
         
         // Pausar el tiempo si se desea que el menú detenga el juego
         Time.timeScale = 0f; 
@@ -163,6 +175,40 @@ public class GameController : MonoBehaviour
 
         UpdateMusicState();
         UpdatePaintState();
+
+        // Si se cierra el menú principal, cerramos también los sub-paneles por seguridad
+        if (!isMenuActive)
+        {
+            if (creditsPanel != null) creditsPanel.SetActive(false);
+            if (tutorialPanel != null) tutorialPanel.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Métodos para abrir/cerrar paneles de Créditos y Tutorial
+    /// </summary>
+    public void OpenCredits()
+    {
+        if (creditsPanel != null) creditsPanel.SetActive(true);
+        if (menuPanel != null) menuPanel.SetActive(false);
+    }
+
+    public void CloseCredits()
+    {
+        if (creditsPanel != null) creditsPanel.SetActive(false);
+        if (menuPanel != null) menuPanel.SetActive(true);
+    }
+
+    public void OpenTutorial()
+    {
+        if (tutorialPanel != null) tutorialPanel.SetActive(true);
+        if (menuPanel != null) menuPanel.SetActive(false);
+    }
+
+    public void CloseTutorial()
+    {
+        if (tutorialPanel != null) tutorialPanel.SetActive(false);
+        if (menuPanel != null) menuPanel.SetActive(true);
     }
 
     private void UpdatePaintState()
