@@ -1322,8 +1322,6 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
-  - component: {fileID: 519420034}
-  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1416,7 +1414,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 38.4
+  field of view: 38.399998
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1449,38 +1447,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &519420033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1228542030, guid: b224e81e64a29914e96ad09e299c81e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForceClick.dll::ForceClick.ClickController
-  SwipeDistanceRequired: 50
-  IsTouch: 1
-  ShowRay: 0
-  MouseMoveOffset: 10
---- !u!114 &519420034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1228542030, guid: b224e81e64a29914e96ad09e299c81e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForceClick.dll::ForceClick.ClickController
-  SwipeDistanceRequired: 50
-  IsTouch: 0
-  ShowRay: 0
-  MouseMoveOffset: 10
 --- !u!1 &570779988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1533,7 +1499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed9f5c3dfb4c4dceb58331b0c2687c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushesButton
-  brushSize: 0.6
+  brushSize: 0.08
   selectedOffset: 10
   paintController: {fileID: 737036365}
 --- !u!114 &570779991
@@ -2938,7 +2904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed9f5c3dfb4c4dceb58331b0c2687c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushesButton
-  brushSize: 1.2
+  brushSize: 0.12
   selectedOffset: 10
   paintController: {fileID: 737036365}
 --- !u!114 &1201873164
@@ -3051,6 +3017,23 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3440051217498401238, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
   m_PrefabInstance: {fileID: 8311237501358059577}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1224594474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224594472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e489068da90874b8091dcac38f35bd3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleDrawController
+  drawMode: 0
+  lineMaterial: {fileID: 2100000, guid: 8e64a72f2cb9c45bba4b11d98489b11f, type: 2}
+  minDistance: 0.01
+  drawOffset: 0.01
+  paintController: {fileID: 737036365}
 --- !u!1 &1227104553
 GameObject:
   m_ObjectHideFlags: 0
@@ -3181,7 +3164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed9f5c3dfb4c4dceb58331b0c2687c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushesButton
-  brushSize: 1.8
+  brushSize: 0.2
   selectedOffset: 10
   paintController: {fileID: 737036365}
 --- !u!114 &1299088901
@@ -4450,6 +4433,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2174696871805255902, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
+      propertyPath: brushSize
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 2620528685667190199, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
       propertyPath: m_Name
       value: MaskController
@@ -4722,7 +4709,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1651426410483333696, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
     m_RemovedGameObjects:
     - {fileID: 5552524258446464332, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
     - {fileID: 7426437349012833694, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
@@ -4741,7 +4729,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4429647610660317365, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1299088899}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3440051217498401238, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1224594474}
   m_SourcePrefab: {fileID: 100100000, guid: 04edf8bc9f93745cda4bb8d85b910270, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

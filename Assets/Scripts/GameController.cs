@@ -264,7 +264,7 @@ public class GameController : MonoBehaviour
         // Asegurar que paintController sepa de la nueva máscara (si es necesario)
         if (paintController != null)
         {
-            // paintController.maskObject = currentMaskInstance; // Si PaintController necesita referencia explícita
+            paintController.maskObject = currentMaskInstance; // Si PaintController necesita referencia explícita
         }
 
         // Resetear estado de confirmación
@@ -288,8 +288,5 @@ public class GameController : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
     }
 }

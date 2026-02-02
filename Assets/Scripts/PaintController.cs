@@ -1,5 +1,5 @@
 using UnityEngine;
-using ForceDraw;
+// using ForceDraw; // Removed to fix build errors & dependency
 
 public class PaintController : MonoBehaviour
 {
@@ -7,10 +7,10 @@ public class PaintController : MonoBehaviour
     [Header("Draw Controller")]
     public GameObject drawControllerObject;
     public GameObject maskObject;
-    public DrawData drawData;
+    public SimpleDrawData drawData = new SimpleDrawData(); // Replaced DrawData
     public GameObject[] BrushesButtons;
 
-    private DrawLineController drawLineController;
+    private SimpleDrawController drawLineController; // Replaced DrawLineController
 
 
     [Header("Rotación")]
@@ -37,7 +37,7 @@ public class PaintController : MonoBehaviour
 
     [Tooltip("Permite/deshabilita la rotación (WASD/tacto/ratón).")]
     public bool canRotate = true;
-    
+
     [Tooltip("Control maestro para habilitar/deshabilitar toda la interacción (usado por el menú).")]
     public bool canPaint = true;
 
@@ -51,7 +51,7 @@ public class PaintController : MonoBehaviour
     public float cameraRotationSpeed = 100f;
     public Vector2 cameraLimitX = new Vector2(-15, 15); // Pitch
     public Vector2 cameraLimitY = new Vector2(-15, 15); // Yaw
-    
+
     float initialCameraPitch;
     float initialCameraYaw;
     float currentCameraPitch = 0;
@@ -64,7 +64,7 @@ public class PaintController : MonoBehaviour
     float currentRelAngleX;
 
 
-    GameObject[] lastDrawnObjects;
+    // GameObject[] lastDrawnObjects; // No longer used directly here, managed by SimpleDrawController children
 
     // Estado local para gestionar disponibilidad del dibujo mientras se rota
     bool isRotating = false;
@@ -79,7 +79,9 @@ public class PaintController : MonoBehaviour
 
         if (drawControllerObject != null)
         {
-            drawLineController = drawControllerObject.GetComponent<DrawLineController>();
+            drawLineController = drawControllerObject.GetComponent<SimpleDrawController>();
+            // If SimpleDrawController is not yet added, we might need to add it or warn.
+            // Assuming user will set it up or it's on the object.
         }
 
         if (Camera.main != null)
@@ -93,10 +95,13 @@ public class PaintController : MonoBehaviour
     void Update()
     {
         // Si no se permite pintar (ej. estamos en el menú), salimos inmediatamente
-        if (!canPaint) {
-            if (drawLineController != null) drawLineController.SetIsAvailableTrue();
+        if (!canPaint)
+        {
+            if (drawLineController != null) drawLineController.SetIsAvailableTrue(); // Or False? Logic was True to allowing 'reset'?
+            // Actually valid logic: if menu is open, we shouldn't draw. SimpleDrawController checks canPaint too.
             return;
-        };
+        }
+        ;
 
         // No permitir rotación si no estamos en modo edición, está bloqueada o deshabilitada
         if (!editMode || rotationLocked || !canRotate)
@@ -109,10 +114,12 @@ public class PaintController : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonUp(0)) // botón izquierdo soltado
+        // Logic for flushing lines moved to SimpleDrawController internals or kept here?
+        // SimpleDrawController handles input now.
+        // We can keep 'FlushLines' call if needed explicitly, but SimpleDrawController does it on MouseUp.
+        if (Input.GetMouseButtonUp(0))
         {
             if (drawLineController != null) drawLineController.FlushLines();
-
         }
 
         // Acumular cambios de rotación desde distintas fuentes: ratón derecho, toque, WASD/teclas (Horizontal/Vertical)
@@ -127,7 +134,7 @@ public class PaintController : MonoBehaviour
             // Camera Rotation Logic
             float mouseX = Input.GetAxis("Mouse X") * cameraRotationSpeed * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * cameraRotationSpeed * Time.deltaTime;
-            if (invertY) mouseY = -mouseY; // Reuse invertY preference? Or separate? Assuming reuse.
+            if (invertY) mouseY = -mouseY;
 
             currentCameraYaw += mouseX;
             currentCameraPitch -= mouseY; // Pitch up/down
@@ -145,15 +152,13 @@ public class PaintController : MonoBehaviour
                 );
             }
         }
-        
-        // Touch (iOS/Android) for Camera Rotation ?? (User said "second click or similar in ios") -> 2 fingers
-        // Preserving 2-finger logic for now mapped to Camera Rotation instead of object rotation if desired, 
-        // OR user might want 2-finger simply to be "Right Click" equivalent.
+
+        // Touch (iOS/Android) for Camera Rotation
         if (Input.touchCount == 2)
         {
-             Touch t = Input.GetTouch(0);
-             if (t.phase == TouchPhase.Moved)
-             {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Moved)
+            {
                 isCameraRotating = true;
                 float touchMultiplier = 0.1f;
                 float tX = t.deltaPosition.x * touchMultiplier * cameraRotationSpeed * Time.deltaTime;
@@ -175,7 +180,7 @@ public class PaintController : MonoBehaviour
                         0f
                     );
                 }
-             }
+            }
         }
 
 
@@ -186,8 +191,8 @@ public class PaintController : MonoBehaviour
         {
             deltaRelY += axisH * rotationSpeed * Time.deltaTime;
             float keyY = axisV;
-            if (invertY) keyY = -keyY; 
-            // Usually W/S rotates around X axis (Pitch), A/D around Y axis (Yaw) for object
+            if (invertY) keyY = -keyY;
+
             deltaRelX += -keyY * rotationSpeed * Time.deltaTime;
         }
 
@@ -239,6 +244,19 @@ public class PaintController : MonoBehaviour
                 cam.fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
             }
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("T key pressed - toggling draw mode.");
+            if (drawLineController != null)
+            {
+                if (drawLineController.drawMode == SimpleDrawController.DrawMode.Line)
+                    drawLineController.drawMode = SimpleDrawController.DrawMode.Sphere;
+                else
+                    drawLineController.drawMode = SimpleDrawController.DrawMode.Line;
+
+                Debug.Log($"Draw Mode: {drawLineController.drawMode}");
+            }
+        }
 
 
         switch (Input.inputString)
@@ -256,6 +274,8 @@ public class PaintController : MonoBehaviour
                 BrushesButtons[3].GetComponent<BrushesButton>().OnClick();
                 break;
         }
+
+
     }
 
     public void changeDrawSize(float newSize)
@@ -268,12 +288,14 @@ public class PaintController : MonoBehaviour
 
     public void DeleteLines()
     {
-        if (drawLineController != null) {
+        if (drawLineController != null)
+        {
             foreach (Transform child in drawLineController.transform)
             {
                 Destroy(child.gameObject);
             }
+            drawLineController.FlushLines();
         }
-        
+
     }
 }
